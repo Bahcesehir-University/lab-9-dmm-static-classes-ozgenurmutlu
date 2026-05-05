@@ -35,12 +35,13 @@ public:
 
     // Destructor: free dynamically allocated memory
     ~IntArray();
-
     // Copy Constructor: deep copy another IntArray
     IntArray(const IntArray& other);
+    
 
     // Copy Assignment Operator: deep copy with self-assignment check
     IntArray& operator=(const IntArray& other);
+
 
     // Add an element to the end. Return true if successful, false if full.
     bool add(int value);
@@ -93,7 +94,7 @@ public:
 // ================================================================
 
 // TODO 1: Initialize Tracker's static member variable
-// Hint: int Tracker::objectCount = ???;
+int Tracker::objectCount = 0;
 
 
 // ================================================================
@@ -102,19 +103,22 @@ public:
 
 void Tracker::objectCreated() {
     // TODO 2: Increment objectCount
+        objectCount++;
 }
 
 void Tracker::objectDestroyed() {
     // TODO 3: Decrement objectCount
+    objectCount--;
 }
 
 int Tracker::getActiveCount() {
     // TODO 4: Return objectCount
-    return 0;
+    return objectCount;
 }
 
 void Tracker::resetCount() {
     // TODO 5: Reset objectCount to 0
+    objectCount = 0;
 }
 
 // ================================================================
@@ -124,6 +128,10 @@ void Tracker::resetCount() {
 // Constructor
 IntArray::IntArray(int cap) {
     // TODO 6: Allocate dynamic array of size cap using 'new'
+        data = new int[cap] ;
+        capacity = cap ;
+        count = 0 ;
+        Tracker::objectCreated() ;
     //         Initialize capacity, count
     //         Notify Tracker that an object was created
 
@@ -133,7 +141,8 @@ IntArray::IntArray(int cap) {
 IntArray::~IntArray() {
     // TODO 7: Free the dynamic array using 'delete[]'
     //         Notify Tracker that an object was destroyed
-
+delete[] data ;
+Tracker::objectDestroyed() ;
 }
 
 // Copy Constructor
@@ -141,6 +150,13 @@ IntArray::IntArray(const IntArray& other) {
     // TODO 8: Deep copy - allocate new memory and copy elements
     //         Don't forget to copy capacity and count
     //         Notify Tracker that an object was created
+    capacity = other.capacity ;
+count = other.count ;
+data = new int[capacity] ;
+for (int i = 0; i < count; i++) {
+    data[i] = other.data[i];
+}
+Tracker::objectCreated() ;
 
 }
 
@@ -153,21 +169,36 @@ IntArray& IntArray::operator=(const IntArray& other) {
     //         4. Copy all elements, capacity, and count
     //         5. Return *this
     //         NOTE: Do NOT call Tracker here (object already exists)
-
-    return *this;
+    if (this != &other) {
+        delete[] data ;
+        capacity = other.capacity ;
+        count = other.count ;
+        data = new int[capacity] ;
+        for (int i = 0; i < count; i++) {
+            data[i] = other.data[i];
+        }
+    }
+    return *this ;
 }
-
 // Add element
 bool IntArray::add(int value) {
     // TODO 10: If count < capacity, add value at data[count],
     //          increment count, return true.
     //          Otherwise return false.
+    if(count < capacity) {
+        data[count] = value ;
+        count++ ;
+        return true ;
+    }
     return false;
 }
 
 // Get element at index
 int IntArray::get(int index) const {
     // TODO 11: If index is valid (0 <= index < count), return data[index].
+        if (index >= 0 && index < count) {
+            return data[index];
+        }
     //          Otherwise return -1.
     return -1;
 }
@@ -175,25 +206,33 @@ int IntArray::get(int index) const {
 // Size
 int IntArray::size() const {
     // TODO 12: Return count
-    return 0;
+
+    return count;
 }
 
 // Capacity
 int IntArray::getCapacity() const {
     // TODO 13: Return capacity
-    return 0;
+    return capacity;
 }
 
 // isEmpty
 bool IntArray::isEmpty() const {
     // TODO 14: Return true if count == 0
-    return true;
+    if (count == 0) {
+        return true;
+    }
+    return false;
 }
 
 // Remove last element
 bool IntArray::removeLast() {
     // TODO 15: If not empty, decrement count and return true.
     //          Otherwise return false.
+    if (!isEmpty()) {
+        count--;
+        return true;
+    }
     return false;
 }
 
